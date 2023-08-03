@@ -6,18 +6,22 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type generalRepository interface {
+	GetPing(ctx *gin.Context) (*usecases.GetPingResult, error)
+}
+
 type Controller struct {
-	getPing usecases.GetPing
+	gr generalRepository
 }
 
 func New(
-	getPing usecases.GetPing,
+	gr generalRepository,
 ) *Controller {
-	return &Controller{getPing}
+	return &Controller{gr}
 }
 
 func (c *Controller) GetPing(ctx *gin.Context) (*usecases.GetPingResult, error) {
-	res, err := c.getPing.GetPing(ctx)
+	res, err := c.gr.GetPing(ctx)
 	if err != nil {
 		return nil, err
 	}
