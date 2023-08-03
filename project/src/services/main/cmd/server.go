@@ -27,3 +27,23 @@ func RunLoop() {
 		time.Sleep(1 * time.Minute)
 	}
 }
+
+/*
+ usage of a typed response from a gin route
+
+type Response struct {
+    Message string `json:"message"`
+}
+
+func main() {
+    r := gin.Default()
+
+    r.GET("/hello", func(c *gin.Context) {
+        response := Response{Message: "Hello World!"}
+        c.JSON(http.StatusOK, response)
+    })
+
+    r.Run()
+}
+
+*/
