@@ -4,21 +4,25 @@ import (
 	"fmt"
 	"time"
 
+	controller "project/src/services/main/internal/controller/main_service"
+	httpHandler "project/src/services/main/internal/handler/http"
+	router "project/src/services/main/internal/handler/http/routes"
+	memory "project/src/services/main/internal/repository/memory"
+
 	"github.com/gin-gonic/gin"
 )
 
 func RunHttpServer() {
 	fmt.Println("Running http server")
 	r := gin.Default()
+	r.ForwardedByClientIP = true
+	r.SetTrustedProxies([]string{"127.0.0.1"})
 
-	r.GET("/ping", ping)
+	memory := memory.New()
+	ctrl := controller.New(memory)
+	h := httpHandler.New(ctrl)
+	router.Router(r, h)
 	r.Run(":4000")
-}
-
-func ping(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"message": "pong",
-	})
 }
 
 func RunLoop() {
@@ -27,23 +31,3 @@ func RunLoop() {
 		time.Sleep(1 * time.Minute)
 	}
 }
-
-/*
- usage of a typed response from a gin route
-
-type Response struct {
-    Message string `json:"message"`
-}
-
-func main() {
-    r := gin.Default()
-
-    r.GET("/hello", func(c *gin.Context) {
-        response := Response{Message: "Hello World!"}
-        c.JSON(http.StatusOK, response)
-    })
-
-    r.Run()
-}
-
-*/

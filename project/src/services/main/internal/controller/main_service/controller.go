@@ -1,4 +1,4 @@
-package main
+package mainservice
 
 import (
 	usecases "project/src/services/main/domain/usecases"
