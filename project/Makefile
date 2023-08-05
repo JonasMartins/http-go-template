@@ -33,33 +33,33 @@ up-main:
 # test: combine all tests through the entire project
 test:
 	@ echo "Running general tests..."
-	@ rm -f ./project/out/${BIN_TEST} || true \
-  && go test ./project/test/... -c -o ./project/out/${BIN_TEST} \
-  && ./project/out/${BIN_TEST} -test.v -test.bench=.
+	@ rm -f ./out/${BIN_TEST} || true \
+  && go test ./test/... -c -o ./out/${BIN_TEST} \
+  && ./out/${BIN_TEST} -test.v -test.bench=.
 	@ echo "Finish running general tests"
 
 .PHONY: clean
 ## clean: clean binaries
 clean:
 	@ echo "Removing binaries"
-	@ rm -r ./project/out || true
+	@ rm -r ./out || true
 	@ echo ${DONE_MESSAGE}
 
 .PHONY: build-main
 ## build-main: build de main service executable
 build-main:
-	@ rm -f ./project/out/${BIN_MAIN} || true \
+	@ rm -f ./out/${BIN_MAIN} || true \
 	&& GOOS=darwin CGO_ENABLED=0 GOARCH=arm64 \
-	go build -o ./project/out/${BIN_MAIN} ./project/src/services/main/cmd/*.go
+	go build -o ./out/${BIN_MAIN} ./src/services/main/cmd/*.go
 
 build-main-linux:
-	@ rm -f ./project/out/${BIN_MAIN} || true \
+	@ rm -f ./out/${BIN_MAIN} || true \
 	&& GOOS=linux CGO_ENABLED=0 GOARCH=amd64 \
-	go build -o ./project/out/${BIN_MAIN} ./project/src/services/main/cmd/*.go
+	go build -o ./out/${BIN_MAIN} ./src/services/main/cmd/*.go
 
 ## run-main: run main service executable
 run-main:
-	@ ./project/out/${BIN_MAIN}
+	@ ./out/${BIN_MAIN}
 
 #===================##===================##===================##===================##===================##===================##===================##===================#
 #====== GIT ======##====== GIT ======##====== GIT ======##====== GIT ======##====== GIT ======##====== GIT ======##====== GIT ======##====== GIT ======#
@@ -68,20 +68,20 @@ run-main:
 .PHONY: commit
 ## commit: add and commit files to develop branch
 commit:
-	@ git add . && git commit
+	@ cd .. && git add . && git commit
 
 .PHONY: status
 ## status: show git status
 status:
-	@ git status -u
+	@ cd .. && git status -u
 
 .PHONY: push
 ## push: push application to main branch
 push:
-	@ git push -u origin main
+	@ cd .. && git push -u origin main
 
 .PHONY: push-d
 ## push-d: push application to develop branch
 push-d:
-	@ git push -u origin develop
+	@ cd .. && git push -u origin develop
 
