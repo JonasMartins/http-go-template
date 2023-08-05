@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"project/src/pkg/utils"
+	cfg "project/src/services/main/configs"
 	controller "project/src/services/main/internal/controller/main_service"
 	httpHandler "project/src/services/main/internal/handler/http"
 	router "project/src/services/main/internal/handler/http/routes"
@@ -14,10 +15,10 @@ import (
 )
 
 func RunHttpServer() {
-	fmt.Println("Running http server")
+	config := GetConfig()
 	r := gin.Default()
 	r.ForwardedByClientIP = true
-	err := r.SetTrustedProxies([]string{"127.0.0.1"})
+	err := r.SetTrustedProxies([]string{config.API.Domain})
 	if err != nil {
 		utils.FatalResult("Error at set trustedProxies: ", err)
 	}
@@ -25,10 +26,11 @@ func RunHttpServer() {
 	ctrl := controller.New(memory)
 	h := httpHandler.New(ctrl)
 	router.Router(r, h)
-	err = r.Run(":4000")
+	err = r.Run(fmt.Sprintf(":%d", config.API.Port))
 	if err != nil {
 		utils.FatalResult("Error at set starting server: ", err)
 	}
+	fmt.Println("Running http server")
 }
 
 func RunLoop() {
@@ -36,4 +38,14 @@ func RunLoop() {
 		fmt.Println("Server Running for ever")
 		time.Sleep(1 * time.Minute)
 	}
+}
+
+// * Get a pointer to config object with all
+// * needed variables from yaml file
+func GetConfig() *cfg.Config {
+	cfg, err := cfg.LoadConfig()
+	if err != nil {
+		utils.FatalResult("Could not load config: ", err)
+	}
+	return cfg
 }
