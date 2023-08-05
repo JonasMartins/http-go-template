@@ -29,6 +29,12 @@ up-main:
 #====== LOCAL ======##====== LOCAL ======##====== LOCAL ======##====== LOCAL ======##====== LOCAL ======##====== LOCAL ======##====== LOCAL ======##====== LOCAL ======#
 #===================##===================##===================##===================##===================##===================##===================##===================#
 
+# lint: run golangci-lint to run in our project
+lint:
+	@ echo "Running Linter..."
+	@ golangci-lint run ./...
+	@ echo ${DONE_MESSAGE}
+
 .PHONY: test
 # test: combine all tests through the entire project
 test:

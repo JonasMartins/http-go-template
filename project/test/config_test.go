@@ -47,6 +47,5 @@ func TestConfig(t *testing.T) {
 		if reflect.TypeOf(got) != reflect.TypeOf(&want) {
 			t.Errorf("got %q, wanted %q", *got, want)
 		}
-		got = nil
 	})
 }
