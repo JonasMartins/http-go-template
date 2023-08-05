@@ -27,7 +27,7 @@ type dbConfig struct {
 // * with all the avaliable configs
 func LoadConfig() (*Config, error) {
 	utils := utils.New()
-	path, err := utils.GetFilePath(&[]string{"src", "services", "log", "configs", "base.yaml"})
+	path, err := utils.GetFilePath(&[]string{"src", "services", "main", "configs", "base.yaml"})
 	if err != nil {
 		return nil, err
 	}
