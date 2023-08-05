@@ -7,5 +7,10 @@ import (
 )
 
 func Router(r *gin.Engine, h *httpHandler.Handler) {
-	r.GET("/ping", h.GetPingHttp)
+	rg := LoadPrefix(r)
+	rg.GET("/ping", h.GetPingHttp)
+}
+
+func LoadPrefix(r *gin.Engine) *gin.RouterGroup {
+	return r.Group("/v1")
 }

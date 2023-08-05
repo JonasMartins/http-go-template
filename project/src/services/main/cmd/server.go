@@ -1,7 +1,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"project/src/pkg/utils"
@@ -14,8 +20,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RunHttpServer() {
-	config := GetConfig()
+func RunHttpServer(config *cfg.Config) {
 	r := gin.Default()
 	r.ForwardedByClientIP = true
 	err := r.SetTrustedProxies([]string{config.API.Domain})
@@ -26,11 +31,48 @@ func RunHttpServer() {
 	ctrl := controller.New(memory)
 	h := httpHandler.New(ctrl)
 	router.Router(r, h)
-	err = r.Run(fmt.Sprintf(":%d", config.API.Port))
-	if err != nil {
-		utils.FatalResult("Error at set starting server: ", err)
+
+	srv := BuildAndReturnSrv(r, uint32(config.API.Port))
+
+	log.Printf("Http server running at %s:%d", config.API.Domain, config.API.Port)
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			utils.FatalResult("Error at set starting server: ", err)
+		}
+	}()
+
+	// Wait for interrupt signal to gracefully shutdown the server with
+	// a timeout of 5 seconds.
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	log.Println("Shutdown Server ...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Fatal("Server Shutdown:", err)
 	}
-	fmt.Println("Running http server")
+	conn := <-ctx.Done()
+	log.Println("timeout of 3 seconds. ", conn)
+	log.Println("Server exiting")
+}
+
+func ShotDownServer(srv *http.Server) error {
+	ctx := context.Background()
+	if err := srv.Shutdown(ctx); err != nil {
+		return err
+	}
+	log.Println("Server exiting")
+	return nil
+}
+
+func BuildAndReturnSrv(r *gin.Engine, port uint32) *http.Server {
+	srv := &http.Server{
+		Addr:    fmt.Sprintf(":%d", port),
+		Handler: r,
+	}
+	return srv
 }
 
 func RunLoop() {
@@ -38,14 +80,4 @@ func RunLoop() {
 		fmt.Println("Server Running for ever")
 		time.Sleep(1 * time.Minute)
 	}
-}
-
-// * Get a pointer to config object with all
-// * needed variables from yaml file
-func GetConfig() *cfg.Config {
-	cfg, err := cfg.LoadConfig()
-	if err != nil {
-		utils.FatalResult("Could not load config: ", err)
-	}
-	return cfg
 }

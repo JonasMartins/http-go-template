@@ -16,6 +16,7 @@ type apiConfig struct {
 	Domain           string `yaml:"domain"`
 	Port             int    `yaml:"port"`
 	LoadBalancerAddr string `yaml:"load_balancer_addr"`
+	GinMode          string `yaml:"gin_mode"`
 }
 
 type dbConfig struct {
