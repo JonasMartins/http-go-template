@@ -4,6 +4,7 @@ version: '3'
 services:
   htt-go-template:
     container_name: http-go-template-main-prod
+    image: http-go-template-main-prod:0.1.0
     build:
       context: ../../../../../
       dockerfile: src/services/main/docker/production/Dockerfile
