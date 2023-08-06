@@ -11,10 +11,10 @@ import (
 	"time"
 
 	"project/src/pkg/utils"
-	httpHandler "project/src/services/main/cmd/handler/http"
-	router "project/src/services/main/cmd/handler/http/routes"
 	cfg "project/src/services/main/configs"
 	controller "project/src/services/main/internal/controller/main_service"
+	httpHandler "project/src/services/main/internal/handler/http"
+	router "project/src/services/main/internal/handler/http/routes"
 	memory "project/src/services/main/internal/repository/memory"
 
 	"github.com/gin-gonic/gin"

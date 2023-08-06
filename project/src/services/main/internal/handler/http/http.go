@@ -14,17 +14,6 @@ type Handler struct {
 func New(ctrl *controller.Controller) *Handler {
 	return &Handler{ctrl: ctrl}
 }
-
-// @BasePath /api/v1
-// PingExample godoc
-// @Summary ping example
-// @Schemes
-// @Description do ping
-// @Tags ping
-// @Accept json
-// @Produce json
-// @Success 200 {string} Helloworld
-// @Router /ping [get]
 func (h *Handler) GetPingHttp(ctx *gin.Context) {
 	res, err := h.ctrl.GetPing(ctx)
 	if err != nil {
