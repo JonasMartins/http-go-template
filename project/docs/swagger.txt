@@ -1,0 +1,4 @@
+how to run:
+
+at services/main/cmd folder:
+~/go/bin/swag init

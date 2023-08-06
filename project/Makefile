@@ -39,14 +39,21 @@ up-main:
 #====== LOCAL ======##====== LOCAL ======##====== LOCAL ======##====== LOCAL ======##====== LOCAL ======##====== LOCAL ======##====== LOCAL ======##====== LOCAL ======#
 #===================##===================##===================##===================##===================##===================##===================##===================#
 
-# lint: run golangci-lint to run in our project
+## swagger: run swagger to generate updated docs
+swagger:
+	@ echo "Running swagger..."
+	@ ~/go/bin/swag init -d ./src/services/main/cmd \
+    -o ./src/services/main/cmd/docs
+	@ echo ${DONE_MESSAGE}
+
+## lint: run golangci-lint to run in our project
 lint:
 	@ echo "Running Linter..."
 	@ golangci-lint run ./...
 	@ echo ${DONE_MESSAGE}
 
 .PHONY: test
-# test: combine all tests through the entire project
+## test: combine all tests through the entire project
 test:
 	@ echo "Running general tests..."
 	@ rm -f ./out/${BIN_TEST} || true \
