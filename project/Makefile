@@ -15,13 +15,23 @@ help:
 #====== DOCKER ======##====== DOCKER ======##====== DOCKER ======##====== DOCKER ======##====== DOCKER ======##====== DOCKER ======##====== DOCKER ======##====== DOCKER ======#
 #===================##===================##===================##===================##===================##===================##===================##===================#
 
+## up-prod: build up the realated containers
+up-prod: up-main-prod
+
+## up-main-prod: up docker for main service
+up-main-prod:
+	@ echo "Up main service container"
+	@ docker-compose -f src/services/main/docker/production/docker-compose.yml \
+  --verbose up --build --remove-orphans -d
+	@ echo ${DONE_MESSAGE}
+
 ## up-dev: build up the realated containers
 up-dev: up-main
 
 ## up-main: up docker for main service
 up-main:
 	@ echo "Up main service container"
-	@ docker-compose -f project/src/services/main/docker/development/docker-compose.yml \
+	@ docker-compose -f src/services/main/docker/development/docker-compose.yml \
   --verbose up --build --remove-orphans -d
 	@ echo ${DONE_MESSAGE}
 
@@ -58,6 +68,7 @@ build-main:
 	&& GOOS=darwin CGO_ENABLED=0 GOARCH=arm64 \
 	go build -o ./out/${BIN_MAIN} ./src/services/main/cmd/*.go
 
+## build-main-linux: build de main service executable for linux machine
 build-main-linux:
 	@ rm -f ./out/${BIN_MAIN} || true \
 	&& GOOS=linux CGO_ENABLED=0 GOARCH=amd64 \

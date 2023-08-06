@@ -18,7 +18,7 @@ func New(ctrl *controller.Controller) *Handler {
 func (h *Handler) GetPingHttp(ctx *gin.Context) {
 	res, err := h.ctrl.GetPing(ctx)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 	ctx.JSON(http.StatusOK, res)
 }

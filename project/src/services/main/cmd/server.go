@@ -23,7 +23,7 @@ import (
 func RunHttpServer(config *cfg.Config) {
 	r := gin.Default()
 	r.ForwardedByClientIP = true
-	err := r.SetTrustedProxies([]string{config.API.Domain})
+	err := r.SetTrustedProxies(nil)
 	if err != nil {
 		utils.FatalResult("Error at set trustedProxies: ", err)
 	}
