@@ -1,0 +1,36 @@
+name: Project
+
+on:
+  push:
+    branches:
+      - 'develop'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.20'
+
+      - name: Clean executables
+        run: rm -f project/out || true
+
+      - name: Install dependencies
+        run: cd ./project && go mod tidy && cd ..
+
+      - name: Create yaml development file
+        run: |
+
+      - name: Build Test
+        run: |
+          cd ./project \
+          && go test ./test/... -c -o ./out/${BIN_TEST} \
+          && ./out/${BIN_TEST} -test.v -test.bench=.
+
+      - name: Test
+        run: go test -v ./...
