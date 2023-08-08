@@ -2,7 +2,20 @@
 version: '3'
 
 services:
-  htt-go-template:
+
+  reverse-proxy:
+    container_name: http-go-template-main-reverse-proxy
+    image: nginx:latest
+    depends_on:
+      - http-go-template
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 80:80
+    networks:
+      - dev
+
+  http-go-template:
     container_name: http-go-template-main-prod
     image: http-go-template-main-prod:0.1.0
     build:
@@ -14,6 +27,7 @@ services:
     #   - db
     networks:
       - dev
+
   # db:
   #   container_name: http-go-template-db
   #   image: postgres:15.3-alpine3.18
