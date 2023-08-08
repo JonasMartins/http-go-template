@@ -3,11 +3,13 @@ name: Project
 on:
   push:
     branches:
-      - 'develop'
+      - "develop"
+env:
+  api_port: ${{ vars.API_PORT }}
+  db_conn: ${{ secrets.DB_CONN }}
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -15,11 +17,13 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.20'
+          go-version: "1.20"
 
-      - name: Hello World
-        run: echo "Hello World"
+      - name: Get Variables
+        run: echo "Api default port ${{ env.api_port }}"
+
+      - name: Get Secrets
+        run: echo "Db conn ${{ env.db_conn }}"
 
       - name: List
         run: echo $(ls -la)
-
