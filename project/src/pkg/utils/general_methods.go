@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"bytes"
 	"log"
 	"os/exec"
 )
@@ -11,7 +12,7 @@ func GenerateNewUUid() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return newUUID, nil
+	return bytes.TrimSuffix(newUUID, []byte("\n")), nil
 }
 
 // * Returns a fatalf response

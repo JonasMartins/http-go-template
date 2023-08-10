@@ -34,7 +34,7 @@ func RunHttpServer(config *cfg.Config) {
 	memory := memory.New()
 	ctrl := controller.New(memory)
 	h := httpHandler.New(ctrl)
-	router.Router(r, h)
+	router.Router(r, h, config)
 
 	srv := BuildAndReturnSrv(r, uint32(config.API.Port))
 

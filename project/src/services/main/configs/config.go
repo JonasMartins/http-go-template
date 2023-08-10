@@ -13,11 +13,12 @@ type Config struct {
 }
 
 type apiConfig struct {
-	Domain            string `yaml:"domain"`
-	Port              int    `yaml:"port"`
-	LoadBalancerAddr  string `yaml:"load_balancer_addr"`
-	GinMode           string `yaml:"gin_mode"`
-	GinTrustedProxies string `yaml:"gin_trusted_proxies"`
+	Domain            string   `yaml:"domain"`
+	Port              int      `yaml:"port"`
+	LoadBalancerAddr  string   `yaml:"load_balancer_addr"`
+	GinMode           string   `yaml:"gin_mode"`
+	GinTrustedProxies string   `yaml:"gin_trusted_proxies"`
+	AvaliableApiKeys  []string `yaml:"avaliable_api_keys"`
 }
 
 type dbConfig struct {
