@@ -35,6 +35,31 @@ up-main:
   --verbose up --build --remove-orphans -d
 	@ echo ${DONE_MESSAGE}
 
+.PHONY: migrate-create
+## migrate-create: run migrations create command usage => make migrate-create migration-name=something
+migrate-create:
+	@ echo "Running migrations create"
+	@ docker compose -f src/services/main/docker/development/docker-compose.yml --profile tools run --rm migrate create -ext sql -dir /migrations -seq $(migration-name)
+
+.PHONY: migrate-up
+## migrate-up: run migrations up command
+migrate-up:
+	@ echo "Running migrations up"
+	@ docker compose -f src/services/main/docker/development/docker-compose.yml --profile tools run --rm migrate up
+
+.PHONY: migrate-down
+## migrate-down: run migrations down command
+migrate-down:
+	@ echo "Running migrations down"
+	@ docker compose -f src/services/main/docker/development/docker-compose.yml --profile tools run --rm migrate up
+
+.PHONY: migrate-fix
+## migrate-fix: run migrations fix command
+migrate-fix:
+	@ echo "Running migrations fix"
+	@ docker compose -f src/services/main/docker/development/docker-compose.yml --profile tools run --rm migrate force 2
+
+
 #===================##===================##===================##===================##===================##===================##===================##===================#
 #====== LOCAL ======##====== LOCAL ======##====== LOCAL ======##====== LOCAL ======##====== LOCAL ======##====== LOCAL ======##====== LOCAL ======##====== LOCAL ======#
 #===================##===================##===================##===================##===================##===================##===================##===================#

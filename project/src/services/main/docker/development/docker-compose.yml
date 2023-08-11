@@ -38,7 +38,7 @@ services:
         "-path",
         "/migrations",
         "-database",
-        "postgres://postgres:ps_secret@database:5432/project?sslmode=disable",
+        "postgres://postgres:ps_secret@db:5432/project?sslmode=disable",
       ]
     command: ["up"]
     links:
