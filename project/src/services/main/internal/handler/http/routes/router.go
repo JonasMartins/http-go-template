@@ -15,5 +15,5 @@ func Router(r *gin.Engine, h *httpHandler.Handler, config *cfg.Config) {
 }
 
 func LoadPrefix(r *gin.Engine, config *cfg.Config) *gin.RouterGroup {
-	return r.Group("/api/v1", mdw.AuthMiddleware(&config.API.AvaliableApiKeys))
+	return r.Group("/api/v1", mdw.AuthApiKeyMiddleware(&config.API.AvaliableApiKeys))
 }
