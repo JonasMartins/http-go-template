@@ -6,22 +6,31 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type generalRepository interface {
+type userRepository interface {
 	GetPing(ctx *gin.Context) (*usecases.GetPingResult, error)
+	AddUser(ctx *gin.Context, data *usecases.AddUserParams) (*usecases.AddUserResult, error)
 }
 
 type Controller struct {
-	gr generalRepository
+	ur userRepository
 }
 
 func New(
-	gr generalRepository,
+	ur userRepository,
 ) *Controller {
-	return &Controller{gr}
+	return &Controller{ur}
 }
 
 func (c *Controller) GetPing(ctx *gin.Context) (*usecases.GetPingResult, error) {
-	res, err := c.gr.GetPing(ctx)
+	res, err := c.ur.GetPing(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func (c *Controller) AddUser(ctx *gin.Context, data *usecases.AddUserParams) (*usecases.AddUserResult, error) {
+	res, err := c.ur.AddUser(ctx, data)
 	if err != nil {
 		return nil, err
 	}

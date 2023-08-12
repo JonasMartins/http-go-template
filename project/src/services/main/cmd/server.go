@@ -15,7 +15,7 @@ import (
 	controller "project/src/services/main/internal/controller/main_service"
 	httpHandler "project/src/services/main/internal/handler/http"
 	router "project/src/services/main/internal/handler/http/routes"
-	memory "project/src/services/main/internal/repository/memory"
+	usersRepository "project/src/services/main/internal/repository/postgres"
 
 	"github.com/gin-gonic/gin"
 )
@@ -31,8 +31,12 @@ func RunHttpServer(config *cfg.Config) {
 	if err != nil {
 		utils.FatalResult("Error at set trustedProxies: ", err)
 	}
-	memory := memory.New()
-	ctrl := controller.New(memory)
+	usersRepo, err := usersRepository.NewRepository(config)
+	if err != nil {
+		utils.FatalResult("Error while connecting to the database a returning a new repository: ", err)
+	}
+
+	ctrl := controller.New(usersRepo)
 	h := httpHandler.New(ctrl)
 	router.Router(r, h, config)
 
