@@ -28,22 +28,22 @@ func NewPasetoFactory(key string) (TokenFactory, error) {
 }
 
 func (f *PasetoFactory) GenerateToken(email string, duration time.Duration) (string, error) {
-	tr, err := NewTokenResponse(email, duration)
+	payload, err := NewTokenPayload(email, duration)
 	if err != nil {
 		return "", err
 	}
-	return f.paseto.Encrypt(f.key, tr, nil)
+	return f.paseto.Encrypt(f.key, payload, nil)
 }
-func (f *PasetoFactory) VerifyToken(token string) (*TokenResponse, error) {
-	tr := &TokenResponse{}
+func (f *PasetoFactory) VerifyToken(token string) (*TokenPayload, error) {
+	payload := &TokenPayload{}
 
-	err := f.paseto.Decrypt(token, f.key, tr, nil)
+	err := f.paseto.Decrypt(token, f.key, payload, nil)
 	if err != nil {
 		return nil, errors.New("invalid token")
 	}
-	err = tr.Valid()
+	err = payload.Valid()
 	if err != nil {
 		return nil, err
 	}
-	return tr, nil
+	return payload, nil
 }
