@@ -13,6 +13,7 @@ import (
 	"project/src/pkg/utils"
 	cfg "project/src/services/main/configs"
 	controller "project/src/services/main/internal/controller/main_service"
+	auth "project/src/services/main/internal/handler/auth"
 	httpHandler "project/src/services/main/internal/handler/http"
 	router "project/src/services/main/internal/handler/http/routes"
 	usersRepository "project/src/services/main/internal/repository/postgres"
@@ -31,7 +32,12 @@ func RunHttpServer(config *cfg.Config) {
 	if err != nil {
 		utils.FatalResult("Error at set trustedProxies: ", err)
 	}
-	usersRepo, err := usersRepository.NewRepository(config)
+
+	pasetoAuth, err := auth.NewPasetoFactory(config.API.TokenSecret)
+	if err != nil {
+		utils.FatalResult("Error at building auth manager: ", err)
+	}
+	usersRepo, err := usersRepository.NewRepository(config, pasetoAuth)
 	if err != nil {
 		utils.FatalResult("Error while connecting to the database a returning a new repository: ", err)
 	}

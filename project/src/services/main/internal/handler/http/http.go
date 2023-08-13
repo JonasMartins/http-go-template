@@ -24,6 +24,18 @@ func (h *Handler) GetPingHttp(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
+func (h *Handler) LoginHttp(ctx *gin.Context) {
+	var data usecases.LoginParams
+	if err := ctx.ShouldBindJSON(&data); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+	res, err := h.ctrl.Login(ctx, &data)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+	ctx.JSON(http.StatusOK, res)
+}
+
 func (h *Handler) AddUserHttp(ctx *gin.Context) {
 	var data usecases.AddUserParams
 	if err := ctx.ShouldBindJSON(&data); err != nil {

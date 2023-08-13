@@ -11,6 +11,7 @@ import (
 
 func Router(r *gin.Engine, h *httpHandler.Handler, config *cfg.Config) {
 	rg := LoadPrefix(r, config)
+	rg.POST("/login", h.LoginHttp)
 	rg.GET("/ping", h.GetPingHttp)
 	rg.POST("/users", h.AddUserHttp)
 	rg.PUT("/users/:id", h.UpdateUserHttp)

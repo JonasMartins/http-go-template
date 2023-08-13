@@ -10,6 +10,7 @@ type userRepository interface {
 	GetPing(ctx *gin.Context) (*usecases.GetPingResult, error)
 	AddUser(ctx *gin.Context, data *usecases.AddUserParams) (*usecases.AddUserResult, error)
 	UpdateUser(ctx *gin.Context, data *usecases.UpdateUserParams) (*usecases.UpdateUserResult, error)
+	Login(ctx *gin.Context, data *usecases.LoginParams) (*usecases.LoginResult, error)
 }
 
 type Controller struct {
@@ -24,6 +25,14 @@ func New(
 
 func (c *Controller) GetPing(ctx *gin.Context) (*usecases.GetPingResult, error) {
 	res, err := c.ur.GetPing(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func (c *Controller) Login(ctx *gin.Context, data *usecases.LoginParams) (*usecases.LoginResult, error) {
+	res, err := c.ur.Login(ctx, data)
 	if err != nil {
 		return nil, err
 	}

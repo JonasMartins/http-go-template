@@ -3,6 +3,7 @@ package configs
 import (
 	"os"
 	"project/src/pkg/utils"
+	"time"
 
 	"gopkg.in/yaml.v3"
 )
@@ -13,12 +14,14 @@ type Config struct {
 }
 
 type apiConfig struct {
-	Domain            string   `yaml:"domain"`
-	Port              int      `yaml:"port"`
-	LoadBalancerAddr  string   `yaml:"load_balancer_addr"`
-	GinMode           string   `yaml:"gin_mode"`
-	GinTrustedProxies string   `yaml:"gin_trusted_proxies"`
-	AvaliableApiKeys  []string `yaml:"avaliable_api_keys"`
+	Domain            string        `yaml:"domain"`
+	Port              int           `yaml:"port"`
+	LoadBalancerAddr  string        `yaml:"load_balancer_addr"`
+	GinMode           string        `yaml:"gin_mode"`
+	GinTrustedProxies string        `yaml:"gin_trusted_proxies"`
+	AvaliableApiKeys  []string      `yaml:"avaliable_api_keys"`
+	TokenSecret       string        `yaml:"token_secret"`
+	TokenDuration     time.Duration `yaml:"token_duration"`
 }
 
 type dbConfig struct {
