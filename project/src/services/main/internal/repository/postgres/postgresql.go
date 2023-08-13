@@ -71,6 +71,58 @@ func (r *Repository) GetPing(ctx *gin.Context) (*usecases.GetPingResult, error) 
 	}, nil
 }
 
+func (r *Repository) UpdateUser(ctx *gin.Context, data *usecases.UpdateUserParams) (*usecases.UpdateUserResult, error) {
+	var conn *pgx.Conn
+	err := r.Db.Ping(ctx)
+	if err != nil {
+		conn, err = r.OpenDbConnection()
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		conn = r.Db
+	}
+
+	tx, err := conn.BeginTx(ctx, pgx.TxOptions{})
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback(ctx)
+		} else {
+			tx.Commit(ctx)
+		}
+		r.CloseConnection()
+	}()
+
+	var hashPass []byte
+	if len(*data.Password) > 0 {
+		hashPass, err = bcrypt.GenerateFromPassword([]byte(*data.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return nil, err
+		}
+	}
+	_, err = tx.Exec(ctx,
+		`update public.users
+    set name = COALESCE($1, name), email = COALESCE($2, email),
+    password = COALESCE($3, password), updated_at = COALESCE($4, updated_at)
+    where id = $5`,
+		data.Name,
+		data.Email,
+		hashPass,
+		time.Now(),
+		data.Id,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &usecases.UpdateUserResult{
+		Id: data.Id,
+	}, nil
+}
+
 func (r *Repository) AddUser(ctx *gin.Context, data *usecases.AddUserParams) (*usecases.AddUserResult, error) {
 	var conn *pgx.Conn
 	err := r.Db.Ping(ctx)
