@@ -4,9 +4,12 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"project/src/pkg/utils"
 	"project/src/services/main/configs"
 	"project/src/services/main/domain/usecases"
 	"testing"
+
+	auth "project/src/services/main/internal/handler/auth"
 
 	"github.com/gin-gonic/gin"
 )
@@ -46,7 +49,11 @@ func TestAddUser(t *testing.T) {
 		t.Errorf("error on get config %s", err.Error())
 		return
 	}
-	r, err := NewRepository(cfg)
+	pasetoAuth, err := auth.NewPasetoFactory(cfg.API.TokenSecret)
+	if err != nil {
+		utils.FatalResult("Error at building auth manager: ", err)
+	}
+	r, err := NewRepository(cfg, pasetoAuth)
 	if err != nil {
 		t.Errorf("error on creating repo %s", err.Error())
 		return

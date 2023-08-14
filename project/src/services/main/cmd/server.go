@@ -44,7 +44,7 @@ func RunHttpServer(config *cfg.Config) {
 
 	ctrl := controller.New(usersRepo)
 	h := httpHandler.New(ctrl)
-	router.Router(r, h, config)
+	router.Router(r, h, config, pasetoAuth)
 
 	srv := BuildAndReturnSrv(r, uint32(config.API.Port))
 

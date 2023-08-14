@@ -2,6 +2,7 @@ package http
 
 import (
 	"net/http"
+	"project/src/pkg/utils"
 	"project/src/services/main/domain/usecases"
 	controller "project/src/services/main/internal/controller/main_service"
 	"strconv"
@@ -31,9 +32,17 @@ func (h *Handler) LoginHttp(ctx *gin.Context) {
 	}
 	res, err := h.ctrl.Login(ctx, &data)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		switch err.Error() {
+		case utils.Wrong_password:
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		case utils.Not_found:
+			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		default:
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		}
+	} else {
+		ctx.JSON(http.StatusOK, res)
 	}
-	ctx.JSON(http.StatusOK, res)
 }
 
 func (h *Handler) AddUserHttp(ctx *gin.Context) {

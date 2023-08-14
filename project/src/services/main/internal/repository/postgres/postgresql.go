@@ -33,25 +33,6 @@ func NewRepository(cfg *configs.Config, tm auth.TokenFactory) (*Repository, erro
 	return &Repository{Db: conn, cfg: cfg, TokenManager: tm}, nil
 }
 
-func (r *Repository) GetPing(ctx *gin.Context) (*usecases.GetPingResult, error) {
-	newUUID, err := utils.GenerateNewUUid()
-	if err != nil {
-		return nil, err
-	}
-	return &usecases.GetPingResult{
-		Data: model.Ping{
-			Base: base.Base{
-				ID:        1,
-				Uuid:      string(newUUID),
-				Version:   1,
-				CreatedAt: time.Now(),
-				UpdatedAt: time.Now(),
-			},
-			Message: "Pong Message",
-		},
-	}, nil
-}
-
 func (r *Repository) Login(ctx *gin.Context, data *usecases.LoginParams) (*usecases.LoginResult, error) {
 	err := r.GetConnection(ctx)
 	if err != nil {
@@ -78,12 +59,12 @@ func (r *Repository) Login(ctx *gin.Context, data *usecases.LoginParams) (*useca
 		&u.Base.CreatedAt,
 	)
 	if err != nil {
-		return nil, err
+		return nil, utils.NewNotFoundError()
 	}
 	// * incorrect password
 	err = utils.ValidatePassword(data.Password, u.Password)
 	if err != nil {
-		return nil, err
+		return nil, utils.NewWrongPasswordError()
 	}
 
 	token, err := r.TokenManager.GenerateToken(u.Email, r.cfg.API.TokenDuration)
@@ -187,6 +168,24 @@ func (r *Repository) AddUser(ctx *gin.Context, data *usecases.AddUserParams) (*u
 	}, nil
 }
 
+func (r *Repository) GetPing(ctx *gin.Context) (*usecases.GetPingResult, error) {
+	newUUID, err := utils.GenerateNewUUid()
+	if err != nil {
+		return nil, err
+	}
+	return &usecases.GetPingResult{
+		Data: model.Ping{
+			Base: base.Base{
+				ID:        1,
+				Uuid:      string(newUUID),
+				Version:   1,
+				CreatedAt: time.Now(),
+				UpdatedAt: time.Now(),
+			},
+			Message: "Pong Message",
+		},
+	}, nil
+}
 func (r *Repository) GetConnection(ctx *gin.Context) error {
 	err := r.Db.Ping(ctx)
 	if err != nil {
