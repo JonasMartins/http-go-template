@@ -28,6 +28,7 @@ func Helloworld(g *gin.Context) {
 func RunHttpServer(config *cfg.Config) {
 	r := gin.Default()
 	r.ForwardedByClientIP = true
+	u := utils.New()
 	err := r.SetTrustedProxies(nil)
 	if err != nil {
 		utils.FatalResult("Error at set trustedProxies: ", err)
@@ -37,7 +38,7 @@ func RunHttpServer(config *cfg.Config) {
 	if err != nil {
 		utils.FatalResult("Error at building auth manager: ", err)
 	}
-	usersRepo, err := usersRepository.NewRepository(config, pasetoAuth)
+	usersRepo, err := usersRepository.NewRepository(config, pasetoAuth, u)
 	if err != nil {
 		utils.FatalResult("Error while connecting to the database a returning a new repository: ", err)
 	}

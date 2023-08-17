@@ -15,6 +15,15 @@ func TestConfig(t *testing.T) {
 
 	u := utils.New()
 
+	t.Run("Get migrations path", func(t *testing.T) {
+		f, err := u.GetFilePath(&[]string{"src", "services", "main", "internal",
+			"repository", "postgres", "migrations"})
+		if err != nil {
+			t.Logf("Err %v", err)
+		}
+		t.Log(f)
+	})
+
 	t.Run("Get FilePath", func(t *testing.T) {
 		f, err := u.GetFilePath(&[]string{"src", "services", "main", "configs", "base.yaml"})
 		if err != nil {

@@ -23,44 +23,43 @@ services:
       dockerfile: src/services/main/docker/production/Dockerfile
     ports:
       - "4000:4000"
-    # depends_on:
-    #   - db
+    depends_on:
+      - db
     networks:
       - dev
-
-  # db:
-  #   container_name: http-go-template-db
-  #   image: postgres:15.3-alpine3.18
-  #   restart: always
-  #   environment:
-  #     - POSTGRES_DB=project
-  #     - POSTGRES_USER=postgres
-  #     - POSTGRES_PASSWORD=ps_secret
-  #   ports:
-  #     - "5432:5432"
-  #   networks:
-  #     - dev
-  # migrate:
-  #   container_name: http-go-template-migrate
-  #   image: migrate/migrate:v4.15.2
-  #   profiles: ["tools"]
-  #   volumes:
-  #     - ./../../internal/repository/postgres/migrations:/migrations
-  #   networks:
-  #     - dev
-  #   entrypoint:
-  #     [
-  #       "migrate",
-  #       "-path",
-  #       "/migrations",
-  #       "-database",
-  #       "postgres://postgres:ps_secret@database:5432/project?sslmode=disable",
-  #     ]
-  #   command: ["up"]
-  #   links:
-  #     - db
-  #   depends_on:
-  #     - db
+  db:
+    container_name: http-go-template-db-prod
+    image: postgres:15.3-alpine3.18
+    restart: always
+    environment:
+      - POSTGRES_DB=project
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=ps_secret
+    ports:
+      - "5432:5432"
+    networks:
+      - dev
+  migrate:
+    container_name: http-go-template-migrate-prod
+    image: migrate/migrate:v4.15.2
+    profiles: ["tools"]
+    volumes:
+      - ./../../internal/repository/postgres/migrations:/migrations
+    networks:
+      - dev
+    entrypoint:
+      [
+        "migrate",
+        "-path",
+        "/migrations",
+        "-database",
+        "postgres://postgres:ps_secret@db:5432/project?sslmode=disable",
+      ]
+    command: ["up"]
+    links:
+      - db
+    depends_on:
+      - db
 networks:
   dev:
     driver: bridge

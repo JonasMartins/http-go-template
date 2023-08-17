@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"project/src/pkg/utils"
 	"project/src/services/main/configs"
@@ -16,6 +17,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5"
+
+	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 type Repository struct {
@@ -24,12 +29,23 @@ type Repository struct {
 	TokenManager auth.TokenFactory
 }
 
-func NewRepository(cfg *configs.Config, tm auth.TokenFactory) (*Repository, error) {
+func NewRepository(cfg *configs.Config, tm auth.TokenFactory, u *utils.Utils) (*Repository, error) {
 	conn, err := pgx.Connect(context.Background(), cfg.DB.Conn)
 	if err != nil {
 		return nil, err
 	}
 	log.Println("database successfully connected")
+	migrationsDirectory, err := u.GetFilePath(&[]string{"src", "services", "main", "internal",
+		"repository", "postgres", "migrations"})
+	if err != nil {
+		return nil, err
+	}
+	m, err := migrate.New(fmt.Sprintf("file://%s", *migrationsDirectory), cfg.DB.Conn)
+	if err != nil {
+		return nil, err
+	}
+	m.Up()
+
 	return &Repository{Db: conn, cfg: cfg, TokenManager: tm}, nil
 }
 
