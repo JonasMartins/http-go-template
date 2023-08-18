@@ -43,7 +43,7 @@ func TestAddUser(t *testing.T) {
 	defer func() {
 		log.Println("Deferred tearing down.")
 	}()
-
+	u := utils.New()
 	cfg, err := configs.LoadConfig()
 	if err != nil {
 		t.Errorf("error on get config %s", err.Error())
@@ -53,7 +53,7 @@ func TestAddUser(t *testing.T) {
 	if err != nil {
 		utils.FatalResult("Error at building auth manager: ", err)
 	}
-	r, err := NewRepository(cfg, pasetoAuth)
+	r, err := NewRepository(cfg, pasetoAuth, u)
 	if err != nil {
 		t.Errorf("error on creating repo %s", err.Error())
 		return

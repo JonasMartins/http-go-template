@@ -40,8 +40,11 @@ func NewRepository(cfg *configs.Config, tm auth.TokenFactory, u *utils.Utils) (*
 	if err != nil {
 		return nil, err
 	}
-	m, err := migrate.New(fmt.Sprintf("file://%s", *migrationsDirectory), cfg.DB.Conn)
+
+	// todo: error running it on docker
+	m, err := migrate.New(fmt.Sprintf("file:%s", *migrationsDirectory), cfg.DB.Conn)
 	if err != nil {
+		log.Println(err.Error())
 		return nil, err
 	}
 	m.Up()
