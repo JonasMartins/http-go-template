@@ -25,6 +25,8 @@ services:
       - "4000:4000"
     depends_on:
       - db
+    entrypoint: ["/app/wait-for.sh", "db:5432", "--", "/app/start.sh"]
+    command: ["/app/_main"]
     networks:
       - dev
 
@@ -40,28 +42,6 @@ services:
       - "5432:5432"
     networks:
       - dev
-
-  migrate:
-    container_name: http-go-template-migrate
-    image: migrate/migrate:v4.15.2
-    profiles: ["tools"]
-    volumes:
-      - ./../../internal/repository/postgres/migrations:/migrations
-    networks:
-      - dev
-    entrypoint:
-      [
-        "migrate",
-        "-path",
-        "/migrations",
-        "-database",
-        "postgres://postgres:ps_secret@db:5432/project?sslmode=disable",
-      ]
-    command: ["up"]
-    links:
-      - db
-    depends_on:
-      - db
 networks:
   dev:
     driver: bridge
