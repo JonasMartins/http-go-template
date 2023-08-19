@@ -17,4 +17,3 @@ begin
 	end if;
 end;$$
 
-call clear_seed()

@@ -22,6 +22,7 @@ type apiConfig struct {
 	AvaliableApiKeys  []string      `yaml:"avaliable_api_keys"`
 	TokenSecret       string        `yaml:"token_secret"`
 	TokenDuration     time.Duration `yaml:"token_duration"`
+	RunningOnDocker   bool          `yaml:"running_on_docker"`
 }
 
 type dbConfig struct {

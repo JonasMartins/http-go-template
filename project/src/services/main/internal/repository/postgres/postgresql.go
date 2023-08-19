@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"project/src/pkg/utils"
 	"project/src/services/main/configs"
@@ -40,14 +39,15 @@ func NewRepository(cfg *configs.Config, tm auth.TokenFactory, u *utils.Utils) (*
 	if err != nil {
 		return nil, err
 	}
-
-	// todo: error running it on docker
-	m, err := migrate.New(fmt.Sprintf("file:%s", *migrationsDirectory), cfg.DB.Conn)
+	path := "file://" + *migrationsDirectory
+	m, err := migrate.New(path, cfg.DB.Conn)
 	if err != nil {
-		log.Println(err.Error())
 		return nil, err
 	}
-	m.Up()
+	err = m.Up()
+	if err != nil && err.Error() != utils.ErrMigrationNoChange.Error() {
+		return nil, err
+	}
 
 	return &Repository{Db: conn, cfg: cfg, TokenManager: tm}, nil
 }

@@ -1,0 +1,1 @@
+call clear_seed();
