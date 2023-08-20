@@ -54,7 +54,7 @@ func TestConfig(t *testing.T) {
 			t.Errorf("Error %s", err.Error())
 		}
 		if reflect.TypeOf(got) != reflect.TypeOf(&want) {
-			t.Errorf("got %q, wanted %q", *got, want)
+			t.Errorf("error expecting same types")
 		}
 	})
 }
