@@ -100,7 +100,7 @@ func TestRandomString(t *testing.T) {
 		log.Println("Deferred tearing down.")
 	}()
 
-	var r string = ""
+	r := ""
 	i := 0
 	for i < 10 {
 		r = utils.RandomString(10)

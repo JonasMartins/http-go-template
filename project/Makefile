@@ -94,7 +94,7 @@ clean:
 	@ echo ${DONE_MESSAGE}
 
 .PHONY: build-main
-## build-main: build de main service executable
+## build-main: build de main service executable fox mac os machine
 build-main:
 	@ rm -f ./out/${BIN_MAIN} || true \
 	&& GOOS=darwin CGO_ENABLED=0 GOARCH=arm64 \

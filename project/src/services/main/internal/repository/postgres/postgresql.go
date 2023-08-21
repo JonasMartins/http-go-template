@@ -107,9 +107,15 @@ func (r *Repository) UpdateUser(ctx *gin.Context, data *usecases.UpdateUserParam
 	}
 	defer func() {
 		if err != nil {
-			tx.Rollback(ctx)
+			err = tx.Rollback(ctx)
+			if err != nil {
+				utils.FatalResult("", err)
+			}
 		} else {
-			tx.Commit(ctx)
+			err = tx.Commit(ctx)
+			if err != nil {
+				utils.FatalResult("", err)
+			}
 		}
 		r.CloseConnection(ctx)
 	}()
@@ -162,9 +168,15 @@ func (r *Repository) AddUser(ctx *gin.Context, data *usecases.AddUserParams) (*u
 	}
 	defer func() {
 		if err != nil {
-			tx.Rollback(ctx)
+			err = tx.Rollback(ctx)
+			if err != nil {
+				utils.FatalResult("", err)
+			}
 		} else {
-			tx.Commit(ctx)
+			err = tx.Commit(ctx)
+			if err != nil {
+				utils.FatalResult("", err)
+			}
 		}
 		r.CloseConnection(ctx)
 	}()
