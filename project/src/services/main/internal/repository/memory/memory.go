@@ -23,14 +23,15 @@ func (m *Memory) GetPing(ctx *gin.Context) (*usecases.GetPingResult, error) {
 	if err != nil {
 		return nil, err
 	}
+	now := time.Now()
 	return &usecases.GetPingResult{
 		Data: model.Ping{
 			Base: base.Base{
 				ID:        1,
 				Uuid:      string(newUUID),
 				Version:   1,
-				CreatedAt: time.Now(),
-				UpdatedAt: time.Now(),
+				CreatedAt: now,
+				UpdatedAt: &now,
 			},
 			Message: "Pong Message",
 		},

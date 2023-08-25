@@ -11,11 +11,11 @@ type User struct {
 	Password string    `json:"-"`
 }
 
-type UserStatus uint8
+type UserStatus string
 
 const (
-	Enabled UserStatus = iota
-	Disabled
+	Enabled  UserStatus = "enabled"
+	Disabled UserStatus = "disabled"
 )
 
 func (s UserStatus) String() string {

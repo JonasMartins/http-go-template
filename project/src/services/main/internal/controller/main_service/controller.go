@@ -11,6 +11,7 @@ type userRepository interface {
 	AddUser(ctx *gin.Context, data *usecases.AddUserParams) (*usecases.AddUserResult, error)
 	UpdateUser(ctx *gin.Context, data *usecases.UpdateUserParams) (*usecases.UpdateUserResult, error)
 	Login(ctx *gin.Context, data *usecases.LoginParams) (*usecases.LoginResult, error)
+	GetUsers(ctx *gin.Context, params *usecases.GetUsersParams) (*usecases.GetUsersResult, error)
 }
 
 type Controller struct {
@@ -21,6 +22,14 @@ func New(
 	ur userRepository,
 ) *Controller {
 	return &Controller{ur}
+}
+
+func (c *Controller) GetUsers(ctx *gin.Context, params *usecases.GetUsersParams) (*usecases.GetUsersResult, error) {
+	res, err := c.ur.GetUsers(ctx, params)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
 }
 
 func (c *Controller) GetPing(ctx *gin.Context) (*usecases.GetPingResult, error) {

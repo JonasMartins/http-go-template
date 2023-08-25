@@ -5,6 +5,7 @@ import (
 	"project/src/pkg/utils"
 	"project/src/services/main/domain/usecases"
 	controller "project/src/services/main/internal/controller/main_service"
+	ginParser "project/src/services/main/internal/handler/http/helpers"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -17,6 +18,20 @@ type Handler struct {
 func New(ctrl *controller.Controller) *Handler {
 	return &Handler{ctrl: ctrl}
 }
+func (h *Handler) GetUsersHttp(ctx *gin.Context) {
+	params, err := ginParser.ParseGinContextToGetUsersParams(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	res, err := h.ctrl.GetUsers(ctx, params)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, res)
+}
+
 func (h *Handler) GetPingHttp(ctx *gin.Context) {
 	res, err := h.ctrl.GetPing(ctx)
 	if err != nil {

@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"log"
+	"math"
 	"project/src/pkg/utils"
 	"project/src/services/main/configs"
 	"project/src/services/main/domain/model"
@@ -199,19 +200,95 @@ func (r *Repository) AddUser(ctx *gin.Context, data *usecases.AddUserParams) (*u
 	}, nil
 }
 
+func (r *Repository) GetUsers(ctx *gin.Context, params *usecases.GetUsersParams) (*usecases.GetUsersResult, error) {
+	err := r.GetConnection(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer r.CloseConnection(ctx)
+
+	items := []*model.User{}
+	result := usecases.GetUsersResult{
+		CurrentPage:       0,
+		TotalPages:        0,
+		TotalItems:        0,
+		TotalItemsPerPage: params.Limit,
+		Items:             items,
+	}
+	queryCount, query, enableWhere, detail := "", "", "", ""
+	if *params.Status == "enabled" {
+		enableWhere = ` and u.deleted_at is null `
+	} else {
+		enableWhere = ` and u.deleted_at is not null `
+	}
+
+	queryCount = `select count(*) as total
+    from public.users u
+    where 1=1` + enableWhere
+	query = `select u.id, u.uuid, u.name, u.email,
+    u.created_at, u.updated_at, u.deleted_at
+    from public.users u
+    where 1=1` + enableWhere +
+		`order by u.id desc limit $1 offset $2`
+
+	totalItems := 0
+	row := r.Db.QueryRow(ctx, queryCount)
+	err = row.Scan(&totalItems)
+	if err != nil {
+		detail = err.Error()
+		return nil, utils.NewServerError(&detail)
+	}
+	result.TotalItems = uint32(totalItems)
+	var offset uint32
+	if params.Page == 1 {
+		offset = 0
+	} else {
+		offset = (params.Page - 1) * params.Limit
+	}
+
+	rows, err := r.Db.Query(ctx, query, params.Limit, offset)
+	if err != nil {
+		detail = err.Error()
+		return nil, utils.NewServerError(&detail)
+	}
+
+	for rows.Next() {
+		var u model.User
+		if err = rows.Scan(
+			&u.Base.ID,
+			&u.Base.Uuid,
+			&u.Name,
+			&u.Email,
+			&u.Base.CreatedAt,
+			&u.Base.UpdatedAt,
+			&u.Base.DeletedAt,
+		); err != nil {
+			detail = err.Error()
+			return nil, utils.NewServerError(&detail)
+		}
+		result.Items = append(result.Items, &u)
+	}
+
+	result.CurrentPage = params.Page
+	result.TotalPages = uint32(math.Ceil(float64(totalItems) / float64(params.Limit)))
+
+	return &result, nil
+}
+
 func (r *Repository) GetPing(ctx *gin.Context) (*usecases.GetPingResult, error) {
 	newUUID, err := utils.GenerateNewUUid()
 	if err != nil {
 		return nil, err
 	}
+	now := time.Now()
 	return &usecases.GetPingResult{
 		Data: model.Ping{
 			Base: base.Base{
 				ID:        1,
 				Uuid:      string(newUUID),
 				Version:   1,
-				CreatedAt: time.Now(),
-				UpdatedAt: time.Now(),
+				CreatedAt: now,
+				UpdatedAt: &now,
 			},
 			Message: "Pong Message",
 		},

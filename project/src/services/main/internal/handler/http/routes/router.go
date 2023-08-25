@@ -27,6 +27,7 @@ func Router(r *gin.Engine, h *httpHandler.Handler, config *cfg.Config, auth auth
 	// * need token and api key
 	authGroup.POST("/users", h.AddUserHttp)
 	authGroup.PUT("/users/:id", h.UpdateUserHttp)
+	authGroup.GET("/users", h.GetUsersHttp)
 }
 
 // * group that needs ap key to validate

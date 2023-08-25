@@ -11,14 +11,16 @@ type GetUsers interface {
 }
 
 type GetUsersParams struct {
-	Page   uint32           `json:"page" binding:"required"`
-	Limit  uint32           `json:"limit" binding:"required"`
-	Status model.UserStatus `json:"status"`
+	Page               uint32            `form:"page" binding:"required"`
+	Limit              uint32            `form:"limit" binding:"required"`
+	Status             *model.UserStatus `form:"status"`
+	PreviousTotalItems *uint32           `form:"previous_total_items"`
 }
 
 type GetUsersResult struct {
-	CurrentPage uint32        `json:"current_page"`
-	TotalIPages uint32        `json:"total_pages"`
-	TotalItems  uint32        `json:"total_items"`
-	Items       *[]model.User `json:"items"`
+	CurrentPage       uint32        `json:"current_page"`
+	TotalPages        uint32        `json:"total_pages"`
+	TotalItems        uint32        `json:"total_items"`
+	TotalItemsPerPage uint32        `json:"total_items_per_page"`
+	Items             []*model.User `json:"items"`
 }
