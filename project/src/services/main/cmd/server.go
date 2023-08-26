@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -26,10 +27,17 @@ func Helloworld(g *gin.Context) {
 }
 
 func RunHttpServer(config *cfg.Config) {
+	gin.DisableConsoleColor()
+	f, err := cfg.GinLogger()
+	if err != nil {
+		utils.FatalResult("Error at setting logger file: ", err)
+	}
+	gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
 	r := gin.Default()
+
 	r.ForwardedByClientIP = true
 	u := utils.New()
-	err := r.SetTrustedProxies(nil)
+	err = r.SetTrustedProxies(nil)
 	if err != nil {
 		utils.FatalResult("Error at set trustedProxies: ", err)
 	}
@@ -48,7 +56,6 @@ func RunHttpServer(config *cfg.Config) {
 	router.Router(r, h, config, pasetoAuth)
 
 	srv := BuildAndReturnSrv(r, uint32(config.API.Port))
-
 	log.Printf("Http server running at %s:%d", config.API.Domain, config.API.Port)
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {

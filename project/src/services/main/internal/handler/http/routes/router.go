@@ -18,6 +18,25 @@ func Router(r *gin.Engine, h *httpHandler.Handler, config *cfg.Config, auth auth
 	rg := ApiKeyGroup(r, config)
 	authGroup := AuthGroup(r, auth, config)
 
+	/*
+		  // custom logger message
+			r.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
+				// your custom format
+				return fmt.Sprintf("%s - [%s] \"%s %s %s %d %s \"%s\" %s\"\n",
+					param.ClientIP,
+					param.TimeStamp.Format(time.RFC1123),
+					param.Method,
+					param.Path,
+					param.Request.Proto,
+					param.StatusCode,
+					param.Latency,
+					param.Request.UserAgent(),
+					param.ErrorMessage,
+				)
+			}))
+			r.Use(gin.Recovery())
+	*/
+
 	// * dont need anything
 	r.GET(fmt.Sprintf("%s/ping", BasicSubDomain), h.GetPingHttp)
 

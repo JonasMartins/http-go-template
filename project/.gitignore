@@ -2,3 +2,4 @@ out/
 base.yaml
 base-docker-prod.yaml
 base-docker-dev.yaml
+*.log
