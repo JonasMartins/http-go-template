@@ -15,7 +15,7 @@ import (
 const BasicSubDomain = "/api/v1"
 
 func Router(r *gin.Engine, h *httpHandler.Handler, config *cfg.Config, auth auth.TokenFactory) {
-	rg := ApieyGroup(r, config)
+	rg := ApiKeyGroup(r, config)
 	authGroup := AuthGroup(r, auth, config)
 
 	// * dont need anything
@@ -31,7 +31,7 @@ func Router(r *gin.Engine, h *httpHandler.Handler, config *cfg.Config, auth auth
 }
 
 // * group that needs ap key to validate
-func ApieyGroup(r *gin.Engine, config *cfg.Config) *gin.RouterGroup {
+func ApiKeyGroup(r *gin.Engine, config *cfg.Config) *gin.RouterGroup {
 	return r.Group(BasicSubDomain, mdw.AuthApiKeyMiddleware(&config.API.AvaliableApiKeys))
 }
 
