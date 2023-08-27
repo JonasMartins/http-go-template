@@ -11,6 +11,25 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func (h *Handler) GetUserHttp(ctx *gin.Context) {
+	params, err := ginParser.ParseGinContextToGetUserParams(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	err = ginParser.ValidateFindUserParams(params)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	res, err := h.ctrl.GetUser(ctx, params)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, res)
+}
+
 func (h *Handler) GetUsersHttp(ctx *gin.Context) {
 	params, err := ginParser.ParseGinContextToGetUsersParams(ctx)
 	if err != nil {
@@ -28,6 +47,7 @@ func (h *Handler) LoginHttp(ctx *gin.Context) {
 	var data usecases.LoginParams
 	if err := ctx.ShouldBindJSON(&data); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 	res, err := h.ctrl.Login(ctx, &data)
 	if err != nil {
@@ -48,10 +68,12 @@ func (h *Handler) AddUserHttp(ctx *gin.Context) {
 	var data usecases.AddUserParams
 	if err := ctx.ShouldBindJSON(&data); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 	res, err := h.ctrl.AddUser(ctx, &data)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 	ctx.JSON(http.StatusCreated, res)
 }
@@ -62,16 +84,19 @@ func (h *Handler) UpdateUserHttp(ctx *gin.Context) {
 
 	if err := ctx.ShouldBindJSON(&data); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
 	intId, err := strconv.Atoi(id)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error at getting user id": err.Error()})
+		return
 	}
 	data.Id = intId
 	res, err := h.ctrl.UpdateUser(ctx, &data)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 	ctx.JSON(http.StatusOK, res)
 }

@@ -24,3 +24,12 @@ func ParseGinContextToGetUsersParams(ctx *gin.Context) (*usecases.GetUsersParams
 	}
 	return &params, nil
 }
+
+func ParseGinContextToGetUserParams(ctx *gin.Context) (*usecases.GetUserParams, error) {
+	var params usecases.GetUserParams
+	err := ctx.ShouldBind(&params)
+	if err != nil {
+		return nil, err
+	}
+	return &params, nil
+}

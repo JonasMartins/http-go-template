@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"fmt"
 	"math"
 	"project/src/pkg/utils"
 	"project/src/services/main/domain/model"
@@ -11,6 +12,55 @@ import (
 	"github.com/jackc/pgx/v5"
 	"golang.org/x/crypto/bcrypt"
 )
+
+func (r *Repository) GetUser(ctx *gin.Context, data *usecases.GetUserParams) (*usecases.GetUserResult, error) {
+	err := r.GetConnection(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer r.CloseConnection(ctx)
+	var u model.User
+	var queryParam any
+	var whereQuery string = ""
+	if data.Email != nil {
+		whereQuery = " and u.email = $1 "
+		queryParam = *data.Email
+	} else if data.Id != nil && data.Email == nil && data.Uuid == nil {
+		whereQuery = " and u.id = $1 "
+		queryParam = *data.Id
+	} else if data.Uuid != nil && data.Id == nil && data.Email == nil {
+		whereQuery = " and u.uuid = $1 "
+		queryParam = *data.Uuid
+	}
+	query := fmt.Sprintf(
+		`
+      select u.id, u.version, u.uuid, u.name,
+      u.email, u.created_at, u.updated_at
+      from public.users u
+      where 1=1
+      %s
+      limit 1
+    `, whereQuery)
+
+	row := r.Db.QueryRow(ctx, query,
+		queryParam,
+	)
+	err = row.Scan(
+		&u.Base.ID,
+		&u.Base.Version,
+		&u.Base.Uuid,
+		&u.Name,
+		&u.Email,
+		&u.Base.CreatedAt,
+		&u.Base.UpdatedAt,
+	)
+	if err != nil {
+		return nil, utils.NewNotFoundError()
+	}
+	return &usecases.GetUserResult{
+		Data: &u,
+	}, nil
+}
 
 func (r *Repository) Login(ctx *gin.Context, data *usecases.LoginParams) (*usecases.LoginResult, error) {
 	err := r.GetConnection(ctx)

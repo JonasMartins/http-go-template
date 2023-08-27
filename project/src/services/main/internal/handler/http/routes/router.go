@@ -47,6 +47,7 @@ func Router(r *gin.Engine, h *httpHandler.Handler, config *cfg.Config, auth auth
 	authGroup.POST("/users", h.AddUserHttp)
 	authGroup.PUT("/users/:id", h.UpdateUserHttp)
 	authGroup.GET("/users", h.GetUsersHttp)
+	authGroup.GET("/user", h.GetUserHttp)
 }
 
 // * group that needs ap key to validate

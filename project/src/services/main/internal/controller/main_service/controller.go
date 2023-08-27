@@ -12,6 +12,7 @@ type userRepository interface {
 	UpdateUser(ctx *gin.Context, data *usecases.UpdateUserParams) (*usecases.UpdateUserResult, error)
 	Login(ctx *gin.Context, data *usecases.LoginParams) (*usecases.LoginResult, error)
 	GetUsers(ctx *gin.Context, params *usecases.GetUsersParams) (*usecases.GetUsersResult, error)
+	GetUser(ctx *gin.Context, data *usecases.GetUserParams) (*usecases.GetUserResult, error)
 }
 
 type Controller struct {
@@ -24,6 +25,13 @@ func New(
 	return &Controller{ur}
 }
 
+func (c *Controller) GetUser(ctx *gin.Context, params *usecases.GetUserParams) (*usecases.GetUserResult, error) {
+	res, err := c.ur.GetUser(ctx, params)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
 func (c *Controller) GetUsers(ctx *gin.Context, params *usecases.GetUsersParams) (*usecases.GetUsersResult, error) {
 	res, err := c.ur.GetUsers(ctx, params)
 	if err != nil {
