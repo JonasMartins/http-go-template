@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -28,16 +27,19 @@ func Helloworld(g *gin.Context) {
 
 func RunHttpServer(config *cfg.Config) {
 	gin.DisableConsoleColor()
-	f, err := cfg.GinLogger()
-	if err != nil {
-		utils.FatalResult("Error at setting logger file: ", err)
-	}
-	gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
+	/*
+			// Error at write file on docker container
+			f, err := cfg.GinLogger()
+			if err != nil {
+				utils.FatalResult("Error at setting logger file: ", err)
+			}
+		gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
+	*/
 	r := gin.Default()
 
 	r.ForwardedByClientIP = true
 	u := utils.New()
-	err = r.SetTrustedProxies(nil)
+	err := r.SetTrustedProxies(nil)
 	if err != nil {
 		utils.FatalResult("Error at set trustedProxies: ", err)
 	}
